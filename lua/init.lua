@@ -30,59 +30,6 @@ function ledgger.setup(opts)
 			ledgger.init_highlight_group()
 		end,
 	})
-
-	ledgger.configure_gitlab_ls(opts)
-end
-
-function ledgger.configure_gitlab_ls(opts)
-	local opts = opts or {}
-	local cmp = require("cmp")
-	cmp.event:on("confirm_done", function(evt)
-		if evt.entry.source.name == "nvim_lsp" then
-			if evt.entry.source.source.client.name == "gitlab-ls" then
-				local line = evt.entry.source_insert_range.start.line
-				local start_col = evt.entry.source_insert_range.start.character - 1
-				local end_col = start_col + string.len(evt.entry.completion_item.label)
-				local text = string.match(evt.entry.completion_item.label, "^[^ ]+")
-				local prefix = string.sub(text, 1, 1)
-				vim.api.nvim_buf_set_text(0, line, start_col, line, end_col, {
-					evt.entry.source.source.client.config.init_options.url
-						.. "/"
-						.. evt.entry.completion_item.labelDetails.detail
-						.. "/-/"
-						.. ((prefix == "!") and "merge_requests/" or "issues/")
-						.. string.sub(text, 2, -1),
-				})
-			end
-		end
-	end)
-	vim.api.nvim_create_autocmd("BufReadPost", {
-		pattern = ledgger.note_dir.filename .. "/*",
-		callback = function()
-			if not ledgger.gitlab_ls_client then
-				ledgger.gitlab_ls_client = vim.lsp.start_client(opts)
-				if not ledgger.gitlab_ls_client then
-					vim.notify("Failed to start gitlab-ls", vim.log.levels.ERROR, {})
-				end
-				vim.api.nvim_set_hl(0, "CmpItemKindText", { link = "DiagnosticError" })
-				vim.api.nvim_set_hl(0, "CmpItemKindMethod", { link = "DiagnosticOk" })
-			end
-			vim.lsp.buf_attach_client(0, ledgger.gitlab_ls_client)
-			cmp.setup.buffer({
-				formatting = {
-					format = function(_, vim_item)
-						local prefix = (vim_item.kind == "Method") and "" or ""
-						if string.len(vim_item.word) > ledgger.max_txt_len then
-							vim_item.abbr = string.sub(vim_item.word, 1, ledgger.max_txt_len) .. "..."
-						end
-						vim_item.kind = string.format("%s %s", prefix, vim_item.menu) -- This concatenates the icons with the name of the item kind
-						vim_item.menu = ""
-						return vim_item
-					end,
-				},
-			})
-		end,
-	})
 end
 
 function ledgger.list_notes()
