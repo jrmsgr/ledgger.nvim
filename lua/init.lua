@@ -3,21 +3,58 @@ local builtin = require("telescope.builtin")
 local a = vim.api
 local ledgger = {}
 
+
+---Create highlight group for default indentation
+---@param hl_info vim.api.keyset.highlight
+---@param base_name string
+---@param index integer
+local function hi_create_default(hl_info, base_name, index)
+	local hl_info = vim.deepcopy(hl_info)
+	if index == 0 then
+		hl_info.bold = true
+		hl_info.underline = true
+	end
+	local hi_name = base_name.."."..(index+1)..".default"
+	a.nvim_set_hl(0, hi_name, hl_info)
+	vim.cmd("syn match "..hi_name.." /\\(\\s\\s\\)\\{" .. index .. "\\}.*/")
+end
+
+---Create highlight group for standout items
+---@param hl_info vim.api.keyset.highlight
+---@param base_name string
+---@param index integer
+local function hi_create_standout(hl_info, base_name, index)
+	local hl_info = vim.deepcopy(hl_info)
+	if index > 0 then
+		hl_info.standout = true
+	end
+	local hi_name = base_name.."."..(index+1)..".standout"
+	a.nvim_set_hl(0, hi_name, hl_info)
+	vim.cmd("syn match "..hi_name.." /\\(\\s\\s\\)\\{" .. index .. "\\}-\\s*⚠️.*/")
+end
+
+---Create highlight group for completed items
+---@param hl_info vim.api.keyset.highlight
+---@param base_name string
+---@param index integer
+local function hi_create_complete(hl_info, base_name, index)
+	local hl_info = vim.deepcopy(hl_info)
+	if index > 0 then
+		hl_info.standout = true
+	end
+	local hi_name = base_name.."."..(index+1)..".completed"
+	a.nvim_set_hl(0, hi_name, hl_info)
+	vim.cmd("syn match "..hi_name.." /\\(\\s\\s\\)\\{" .. index .. "\\}-\\s*✅.*/")
+end
+
 function ledgger.init_highlight_group()
 	for i = 0, 5, 1 do
 		local hl_group = a.nvim_get_hl(0, {name  = "@markup.heading." .. (i + 1) .. ".markdown", link=false})
-		if i == 0 then
-			hl_group.bold = true
-			hl_group.underline = true
-		end
 		local ledgger_name = "ledgger.heading"..(i+1)
-		a.nvim_set_hl(0, ledgger_name, hl_group)
-		vim.cmd("syn match "..ledgger_name.." /\\(\\s\\s\\)\\{" .. i .. "\\}.*/")
+		hi_create_default(hl_group, ledgger_name, i)
 		if i > 0 then
-			ledgger_name = ledgger_name..".complete"
-			hl_group.strikethrough = true
-			a.nvim_set_hl(0, ledgger_name, hl_group)
-			vim.cmd("syn match "..ledgger_name.." /\\(\\s\\s\\)\\{" .. i .. "\\}-\\s*✅.*/")
+			hi_create_complete(hl_group, ledgger_name, i)
+			hi_create_standout(hl_group, ledgger_name, i)
 		end
 	end
 end
