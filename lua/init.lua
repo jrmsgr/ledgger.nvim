@@ -13,6 +13,12 @@ function ledgger.init_highlight_group()
 		local ledgger_name = "ledgger.heading"..(i+1)
 		a.nvim_set_hl(0, ledgger_name, hl_group)
 		vim.cmd("syn match "..ledgger_name.." /\\(\\s\\s\\)\\{" .. i .. "\\}.*/")
+		if i > 0 then
+			ledgger_name = ledgger_name..".complete"
+			hl_group.strikethrough = true
+			a.nvim_set_hl(0, ledgger_name, hl_group)
+			vim.cmd("syn match "..ledgger_name.." /\\(\\s\\s\\)\\{" .. i .. "\\}-\\s*✅.*/")
+		end
 	end
 end
 
