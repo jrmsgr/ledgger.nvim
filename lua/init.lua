@@ -5,7 +5,14 @@ local ledgger = {}
 
 function ledgger.init_highlight_group()
 	for i = 0, 5, 1 do
-		vim.cmd("syn match @markup.heading." .. (i + 1) .. ".markdown /\\(\\s\\s\\)\\{" .. i .. "\\}.*/")
+		local hl_group = a.nvim_get_hl(0, {name  = "@markup.heading." .. (i + 1) .. ".markdown", link=false})
+		if i == 0 then
+			hl_group.bold = true
+			hl_group.underline = true
+		end
+		local ledgger_name = "ledgger.heading"..(i+1)
+		a.nvim_set_hl(0, ledgger_name, hl_group)
+		vim.cmd("syn match "..ledgger_name.." /\\(\\s\\s\\)\\{" .. i .. "\\}.*/")
 	end
 end
 
