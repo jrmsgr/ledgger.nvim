@@ -40,7 +40,7 @@ end
 local function hi_create_complete(hl_info, base_name, index)
 	local hl_info = vim.deepcopy(hl_info)
 	if index > 0 then
-		hl_info.standout = true
+		hl_info.strikethrough = true
 	end
 	local hi_name = base_name.."."..(index+1)..".completed"
 	a.nvim_set_hl(0, hi_name, hl_info)
