@@ -21,8 +21,9 @@ function ledgger.setup(opts)
 	note_dir:mkdir({ exists_ok = true, parents = true })
 	ledgger.note_dir = note_dir
 
-	a.nvim_create_user_command("Ledgger", ledgger.open_head_note, { desc = "Open ledgger note" })
+	a.nvim_create_user_command("Ledgger", ledgger.open_head_note, { desc = "Open head note" })
 	a.nvim_create_user_command("LedggerList", ledgger.list_notes, { desc = "List ledgger notes" })
+	a.nvim_create_user_command("LedggerScratch", ledgger.open_scratch_note, { desc = "Open scratch note" })
 	-- display notes with the correct highlights
 	a.nvim_create_autocmd("BufReadPost", {
 		pattern = note_dir.filename .. "/*",
@@ -48,6 +49,11 @@ function ledgger.open_head_note()
 			vim.cmd("silent w! " .. daily_note.filename)
 		end,
 	})
+end
+
+function ledgger.open_scratch_note()
+	local personal_note = ledgger.note_dir / "scratch.txt"
+	vim.cmd("noswapfile e " .. personal_note.filename)
 end
 
 return ledgger
