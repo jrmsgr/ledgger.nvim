@@ -56,6 +56,8 @@ function ledgger.init_highlight_group()
 			hi_create_complete(hl_group, ledgger_name, i)
 			hi_create_standout(hl_group, ledgger_name, i)
 		end
+		vim.o.foldmethod="indent"
+		vim.o.foldignore=""
 	end
 end
 
