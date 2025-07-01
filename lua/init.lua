@@ -61,6 +61,13 @@ function ledgger.init_highlight_group()
 	end
 end
 
+function ledgger.setup_mappings()
+	vim.keymap.set("n", "o", "o- ", {buffer = true, noremap=true})
+	vim.keymap.set("i", "<CR>", "<CR>- ", {buffer = true, noremap=true})
+	-- vim.keymap.set("i", "<Tab>", function ()
+	-- end, {buffer = true, noremap=true})
+end
+
 function ledgger.setup(opts)
 	opts = opts or {}
 	local note_dir = opts.note_dir or "~/.local/notes"
@@ -81,6 +88,7 @@ function ledgger.setup(opts)
 		pattern = note_dir.filename .. "/*",
 		callback = function()
 			ledgger.init_highlight_group()
+			ledgger.setup_mappings()
 		end,
 	})
 end
