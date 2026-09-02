@@ -1,5 +1,5 @@
 local Path = require("plenary.path")
-local builtin = require("telescope.builtin")
+local fzf_lua = require("fzf-lua")
 local a = vim.api
 local ledgger = {}
 
@@ -71,7 +71,6 @@ end
 function ledgger.setup(opts)
 	opts = opts or {}
 	local note_dir = opts.note_dir or "~/.local/notes"
-	ledgger.max_txt_len = opts.max_len or 20
 	note_dir = Path:new(Path:new(note_dir):expand())
 	if note_dir:is_file() then
 		vim.nvim_notify(note_dir .. " is not a directory!", vim.log.levels.ERROR)
@@ -94,7 +93,7 @@ function ledgger.setup(opts)
 end
 
 function ledgger.list_notes()
-	builtin.find_files({ cwd = ledgger.note_dir.filename, search_file = "*.txt" })
+	fzf_lua.files({ cwd = ledgger.note_dir.filename})
 end
 
 function ledgger.open_head_note()

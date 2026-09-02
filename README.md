@@ -14,14 +14,8 @@ With `lazy.nvim`:
 
     -- gitlab-ls opts
     opts = {
-      name = 'gitlab-ls',
-      cmd = {  'path/to/gitlab-ls/gitlab-ls.sh' },
-      init_options = {
-        url = '<gitlab server base url>',
-        private_token = '<Your private read-only token',
-        projects = { 'projects/project1', 'projects/project2' }, -- List of projects to fetch
-      },
+      note_dir = "~/.local/notes", -- directory where the notes are stored
     },
-    dependencies = { 'nvim-lua/plenary.nvim' },
+    dependencies={"ibhagwan/fzf-lua", "nvim-lua/plenary.nvim"},
   },
 ```
